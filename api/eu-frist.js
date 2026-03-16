@@ -9,20 +9,26 @@ export default async function handler(req, res) {
 
   try {
 
-    const response = await fetch(
-      `https://api.vegvesen.no/vehicledata/v1/vehicles?registrationNumber=${regnr}`,
-      {
-        headers: {
-          "x-api-key": API_KEY
-        }
-      }
-    );
+    const url =
+      `https://autosys-kjoretoy-api.atlas.vegvesen.no/kjoretoydata/api/v1/kjoretoy?registreringsnummer=${encodeURIComponent(regnr)}`;
 
-    const data = await response.json();
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-API-Key": API_KEY,
+        "Accept": "application/json"
+      }
+    });
+
+    const text = await response.text();
 
     res.setHeader("Access-Control-Allow-Origin", "*");
 
-    return res.status(200).json(data);
+    return res.status(200).json({
+      status: response.status,
+      ok: response.ok,
+      raw: text
+    });
 
   } catch (error) {
 
